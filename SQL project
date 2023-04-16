@@ -1,0 +1,22 @@
+WITH
+Low AS (SELECT ROUND(CAST(SUM(quantityordered) AS REAL)/
+														(SELECT quantityInStock
+														   FROM products
+														  WHERE products.productCode = orderdetails.productCode),2) AS lowq, productCode
+  FROM orderdetails
+ GROUP BY productCode
+ ORDER BY lowq DESC
+ LIMIT 10
+ )
+ 
+ SELECT SUM(quantityordered * priceeach) AS product_performance, productcode
+  FROM orderdetails
+
+  WHERE productCode IN (SELECT productCode
+                          FROM Low) 
+  
+ GROUP BY productCode 
+ ORDER BY product_performance DESC
+
+
+LIMIT 10
